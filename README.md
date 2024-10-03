@@ -80,6 +80,35 @@ def regen_delay(self, rng: np.random.Generator, clock: int):
     return rng.integers(10, 100)
 ```
 
+## Gymnasium
+
+This environment can be used with the `gymnasium` interface by installing
+the gym optional dependency, and importing the `forager.gym` module.
+
+```bash
+pip install forager[gym]
+```
+
+```python
+import gymnasium as gym
+import forager.gym
+from forager.Env import ForagerConfig
+from forager.objects import Wall, Flower, Thorns
+
+config = ForagerConfig(
+    size=10,
+    object_types={
+        'wall': Wall,
+        'flower': Flower,
+        'thorns': Thorns,
+    },
+    observation_mode='objects',
+    aperture=(7, 5),
+)
+
+env = gym.make('forager/Forager-v1', config=config)
+```
+
 ## Design philosophy
 This implementation should be fast and memory efficient. To do so, many intermediate representations are cached in `numba` objects which are not immediately serializable. This comes at a slight additional cost when initially building the environment and whenever the environment is serialized/deserialized (e.g. during checkpointing) while saving a significant amount of time on every `env.step` call. This design also comes at a mild readability and flexibility cost in order to significantly speed up observation generating code.
 

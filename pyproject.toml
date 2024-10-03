@@ -23,7 +23,9 @@ dev = [
     "commitizen>=3.2.2",
     "pre-commit>=3.3.2",
 ]
-
+gym = [
+    "gymnasium>=0.26.0",
+]
 
 [tool]
 [tool.commitizen]
