@@ -24,7 +24,7 @@ def test_gym_forager_v2():
     assert info == {}
     observation, reward, terminated, truncated, info = env.step(0)
     assert observation.shape == (3, 3, 3)
-    assert reward == -1.0
+    assert reward == 0.0
     assert not terminated
     assert not truncated
     assert info == {}

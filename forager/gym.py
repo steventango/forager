@@ -1,3 +1,6 @@
+from dataclasses import dataclass, field
+from typing import Dict
+
 import gymnasium as gym
 from gymnasium import spaces
 from gymnasium.envs.registration import register
@@ -10,10 +13,15 @@ from forager.objects import Flower, Thorns, Wall
 from forager.observations import get_color_vision
 
 
+@dataclass
+class ForagerGymConfig(ForagerConfig):
+    object_freqs: Dict[str, float] = field(default_factory=dict)
+
+
 class ForagerGymEnv(gym.Env):
     metadata = {"render_modes": ["rgb_array"], "render_fps": 4}
 
-    def __init__(self, config: ForagerConfig | None = None, *, config_path: str | None = None, render_mode=None):
+    def __init__(self, config: ForagerGymConfig | None = None, *, config_path: str | None = None, render_mode=None):
         self.config = config
         self.config_path = config_path
 
@@ -46,7 +54,8 @@ class ForagerGymEnv(gym.Env):
         self.env = ForagerEnv(self.config, config_path=self.config_path)
 
         for object_type in self.config.object_types:
-            self.env.generate_objects(freq=0.25, name=object_type)
+            object_freq = self.config.object_freqs[object_type]
+            self.env.generate_objects(freq=object_freq, name=object_type)
 
         observation = self.env.start()
         info = self._get_info()
@@ -77,7 +86,7 @@ class ForagerGymEnv(gym.Env):
 colors_v1 = Palette(2)
 colors_v1.register("flower", (0, 255, 0))
 colors_v1.register("thorns", (255, 0, 0))
-config_v1 = ForagerConfig(
+config_v1 = ForagerGymConfig(
     size=15,
     object_types={
         "flower": Flower,
@@ -86,6 +95,10 @@ config_v1 = ForagerConfig(
     colors=colors_v1,
     observation_mode="objects",
     aperture=15,
+    object_freqs={
+        "flower": 0.05,
+        "thorns": 0.1,
+    },
 )
 
 register(
@@ -99,7 +112,7 @@ colors_v2 = Palette(3)
 colors_v1.register("flower", (0, 255, 0))
 colors_v1.register("thorns", (255, 0, 0))
 colors_v1.register("walls", (0, 0, 0))
-config_v2 = ForagerConfig(
+config_v2 = ForagerGymConfig(
     size=10,
     object_types={
         "flower": Flower,
@@ -109,6 +122,11 @@ config_v2 = ForagerConfig(
     colors=colors_v2,
     observation_mode="objects",
     aperture=3,
+    object_freqs={
+        "flower": 0.01,
+        "thorns": 0.1,
+        "wall": 0.2,
+    },
 )
 
 register(
