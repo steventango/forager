@@ -2,7 +2,8 @@ import pickle
 import numpy as np
 from forager.Env import ForagerEnv
 from forager.config import ForagerConfig
-from forager.objects import Flower, Wall, Thorns
+from forager.objects import Flower, Morel, Oyster, Thorns, Wall
+
 
 def test_observation_shape():
     config = ForagerConfig(
@@ -310,38 +311,33 @@ def test_object_location():
     assert f.current_location == (2, 0)
 
 
-def test_object_locations():
+def test_generate_objects():
     config = ForagerConfig(
         size=(16, 8),
         object_types={
-            "truffle": Truffle,
+            "morel": Morel,
             "oyster": Oyster,
         },
         observation_mode="world",
     )
     env = ForagerEnv(config)
-    size = config.size
-    truffle_locations = np.zeros(size)
-    truffle_locations[2:6, 2:6] = 1
-    truffle_locations = np.ravel_multi_index(np.where(truffle_locations), size, order="F")
 
-    oyster_locations = np.zeros(size)
-    oyster_locations[10:14, 2:6] = 1
-    oyster_locations = np.ravel_multi_index(np.where(oyster_locations), size, order="F")
-
-    env.generate_objects_locations(2.0, "truffle", truffle_locations)
-    env.generate_objects_locations(2.0, "oyster", oyster_locations)
+    # because sample_unpopulated only does 10 tries, sometimes collisions will happen
+    # so we need to set freq > 1 to ensure that we get the expected number of objects
+    env.generate_objects(6.0, "morel", (2, 2), (6, 6))
+    env.generate_objects(6.0, "oyster", (10, 2), (14, 6))
 
     obs = env.start()
     assert obs.shape == (8, 16, 3)
     obs = obs.transpose(1, 0, 2)
     assert obs[8, 4, 0]
     assert obs[:, :, 0].sum() == 1
-    assert obs[2:6, 2:6, 2].all()
+    assert obs[2:6, 2:6, 1].all()
     assert obs[:, :, 2].sum() == 16
-    assert obs[10:14, 2:6, 1].all()
+    assert obs[10:14, 2:6, 2].all()
     assert obs[:, :, 1].sum() == 16
     assert obs.sum() == 33
+
 
 def test_render():
     config = ForagerConfig(

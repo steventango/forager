@@ -86,16 +86,20 @@ class ForagerEnv:
 
         return (obs, float(r))
 
-    def add_object(self, obj: ForagerObject):
-        self._obj_store.add_object(obj)
+    def add_object(self, obj: ForagerObject, start: Coords | None = None, stop: Coords | None = None):
+        if start is None:
+            start = (0, 0)
+        if stop is None:
+            stop = self._size
+        self._obj_store.add_object(obj, start, stop)
 
-    def generate_objects(self, freq: float, name: str):
-        size = self._size[0] * self._size[1]
-        self._obj_store.add_n_deferred_objects(name, int(size * freq))
-
-    def generate_objects_locations(self, freq: float, name: str, locations: List[Coords]):
-        size = len(locations)
-        self._obj_store.add_n_deferred_objects_locations(name, int(size * freq), locations)
+    def generate_objects(self, freq: float, name: str, start: Coords | None = None, stop: Coords | None = None):
+        if start is None:
+            start = (0, 0)
+        if stop is None:
+            stop = self._size
+        size = (stop[0] - start[0]) * (stop[1] - start[1])
+        self._obj_store.add_n_deferred_objects(name, int(size * freq), start, stop)
 
     def render(self, agent_color: np.ndarray | None = None):
         out = np.ones((self._size[1], self._size[0], 3), dtype=np.uint8) * 255
@@ -154,7 +158,7 @@ class ForagerEnv:
             return
 
         for obj in self._to_respawn[self._clock]:
-            self._obj_store.add_object(obj)
+            self._obj_store.add_object(obj, (0, 0), self._size)
 
         del self._to_respawn[self._clock]
 

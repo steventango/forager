@@ -49,25 +49,15 @@ def right(c: Coords, s: Coords) -> Coords:
     )
 
 @nbu.njit
-def sample_unpopulated(rng: np.random.Generator, size: Size, objs: Dict[int, Any]):
+def sample_unpopulated(rng: np.random.Generator, start: Coords, stop: Coords, objs: Dict[int, Any]):
     c = (0, 0)
+    size = (stop[1] - start[1], stop[0] - start[0])
     total = size[0] * size[1]
     for _ in range(10):
         idx = rng.integers(0, total)
         c = nbu.unravel(idx, size)
+        c = (c[0] + start[1], c[1] + start[0])
         if idx not in objs:
             return c
 
-    return c
-
-@nbu.njit
-def sample_unpopulated_locations(rng: np.random.Generator, size: Size, objs: Dict[int, Any], locations: list[int]):
-    c = (0, 0)
-    total = len(locations)
-    for _ in range(10):
-        j = rng.integers(0, total)
-        idx = locations[j]
-        c = nbu.unravel(idx, size)
-        if idx not in objs:
-            return c
     return c

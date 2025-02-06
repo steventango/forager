@@ -7,7 +7,7 @@ import forager._utils.numba as nbu
 from typing import Dict
 from forager.colors import Palette
 from forager.config import ForagerObject, ObjectFactory
-from forager.interface import Size
+from forager.interface import Coords, Size
 from forager.logger import logger
 
 class ObjectStorage:
@@ -28,10 +28,10 @@ class ObjectStorage:
         self._idx_to_config: Dict[int, ForagerObject] = {}
         self._colors = palette
 
-    def add_object(self, obj: ForagerObject):
+    def add_object(self, obj: ForagerObject, start: Coords, stop: Coords):
         coords = obj.target_location
         if coords is None:
-            coords = grid.sample_unpopulated(self.rng, self.size, self.idx_to_name)
+            coords = grid.sample_unpopulated(self.rng, start, stop, self.idx_to_name)
 
         obj.current_location = coords
         idx = nbu.ravel(coords, self.size)
@@ -49,12 +49,12 @@ class ObjectStorage:
 
         self.name_to_color[obj.name] = color
 
-    def add_deferred_object(self, name: str):
+    def add_deferred_object(self, name: str, start: Coords, stop: Coords):
         if name not in self.name_to_color:
             obj = self.factories[name]()
-            return self.add_object(obj)
+            return self.add_object(obj, start, stop)
 
-        coords = grid.sample_unpopulated(self.rng, self.size, self.idx_to_name)
+        coords = grid.sample_unpopulated(self.rng, start, stop, self.idx_to_name)
         idx = nbu.ravel(coords, self.size)
 
         if idx in self.idx_to_name:
@@ -63,38 +63,12 @@ class ObjectStorage:
 
         self.idx_to_name[idx] = name
 
-    def add_deferred_object_locations(self, name: str, locations: list[int]):
-        if name not in self.name_to_color:
-            obj = self.factories[name]()
-            coords = grid.sample_unpopulated_locations(self.rng, self.size, self.idx_to_name, locations)
-            obj.target_location = coords
-            return self.add_object(obj)
-
-        coords = grid.sample_unpopulated_locations(self.rng, self.size, self.idx_to_name, locations)
-        idx = nbu.ravel(coords, self.size)
-
-        if idx in self.idx_to_name:
-            prior = self.idx_to_name[idx]
-            logger.warning(f'Object already found at {coords}: {prior}. Replacing with {name}')
-
-        self.idx_to_name[idx] = name
-
-    def add_n_deferred_objects(self, name: str, n: int):
+    def add_n_deferred_objects(self, name: str, n: int, start: Coords, stop: Coords):
         # first add a single object "manually" so that caches can be built correctly
-        self.add_deferred_object(name)
+        self.add_deferred_object(name, start, stop)
 
         # then add n-1 objects quickly without worrying about cache states
-        collisions = _add_many(self.rng, self.size, name, n - 1, self.idx_to_name)
-
-        if collisions > 0:
-            logger.warning(f'Encountered {collisions} collisions while generating objects of type: {name}')
-
-    def add_n_deferred_objects_locations(self, name: str, n: int, locations: list[int]):
-        # first add a single object "manually" so that caches can be built correctly
-        self.add_deferred_object_locations(name, locations)
-
-        # then add n-1 objects quickly without worrying about cache states
-        collisions = _add_many_locations(self.rng, self.size, name, n - 1, self.idx_to_name, locations)
+        collisions = _add_many(self.rng, self.size, start, stop, name, n - 1, self.idx_to_name)
 
         if collisions > 0:
             logger.warning(f'Encountered {collisions} collisions while generating objects of type: {name}')
@@ -128,25 +102,10 @@ class ObjectStorage:
 
 
 @nbu.njit(nogil=False)
-def _add_many(rng, size: Size, name: str, n: int, store: Dict[int, str]):
+def _add_many(rng, size: Size, start: Coords, stop: Coords, name: str, n: int, store: Dict[int, str]):
     count = 0
     for _ in range(n):
-        coords = grid.sample_unpopulated(rng, size, store)
-        idx = nbu.ravel(coords, size)
-
-        if idx in store:
-            count += 1
-
-        store[idx] = name
-
-    return count
-
-
-@nbu.njit(nogil=False)
-def _add_many_locations(rng, size: Size, name: str, n: int, store: Dict[int, str], locations: list[int]):
-    count = 0
-    for _ in range(n):
-        coords = grid.sample_unpopulated_locations(rng, size, store, locations)
+        coords = grid.sample_unpopulated(rng, start, stop, store)
         idx = nbu.ravel(coords, size)
 
         if idx in store:
