@@ -62,7 +62,7 @@ class Thorns(ForagerObject):
         return -1
 
 
-class Truffle(ForagerObject):
+class Morel(ForagerObject):
     def __init__(self, loc: Coords | None = None):
         super().__init__(name="truffle")
 
