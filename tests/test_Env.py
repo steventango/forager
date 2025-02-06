@@ -329,10 +329,9 @@ def test_generate_objects():
 
     obs = env.start()
     assert obs.shape == (8, 16, 3)
-    assert obs[4, 8, 0]
-    assert obs[:, :, 0].sum() == 1
-    assert obs[2:7, 2:7, 1].sum() == 16
-    assert obs[2:7, 10:15, 2].sum() == 16
+    assert obs[4, 8, 0] == 1
+    assert obs[2:6, 2:6, 1].sum() == 16
+    assert obs[2:6, 10:14, 2].sum() == 16
     assert obs.sum() == 33
 
 
