@@ -64,7 +64,7 @@ class Thorns(ForagerObject):
 
 class Morel(ForagerObject):
     def __init__(self, loc: Coords | None = None):
-        super().__init__(name="truffle")
+        super().__init__(name="morel")
 
         self.blocking = False
         self.collectable = True
