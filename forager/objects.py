@@ -103,7 +103,7 @@ class DeathCap(ForagerObject):
         self.blocking = False
         self.collectable = True
         self.target_location = loc
-        self.color = np.array((196, 198, 200), dtype=np.uint8)
+        self.color = np.array((255, 0, 0), dtype=np.uint8)
 
     def regen_delay(self, rng: np.random.Generator, clock: int) -> int | None:
         self.target_location = self.current_location
