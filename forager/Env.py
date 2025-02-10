@@ -12,7 +12,7 @@ from forager.exceptions import ForagerInvalidConfigException
 from forager.interface import Action, Coords, Size
 from forager.objects import ForagerObject
 from forager.ObjectStorage import ObjectStorage
-from forager.observations import get_object_vision, get_color_vision, get_world_vision, render_aperture
+from forager.observations import get_object_vision, get_color_vision, get_world_vision, render_aperture, render_world
 
 
 class ForagerEnv:
@@ -109,41 +109,7 @@ class ForagerEnv:
         if mode == 'aperture':
             return render_aperture(self._state, self._size, self._ap_size, self._obj_store.idx_to_name, self._obj_store.name_to_color, agent_color).astype(np.uint8)
         else:
-            out = self.render_world(agent_color)
-
-        return out
-
-    def render_world(self, agent_color):
-        out = np.ones((self._size[1], self._size[0], 3), dtype=np.uint8) * 255
-        for x in range(self._size[0]):
-            for y in range(self._size[1]):
-                c = (x, y)
-                idx = nbu.ravel(c, self._size)
-                if idx in  self._obj_store.idx_to_name:
-                    name =  self._obj_store.idx_to_name[idx]
-                    color = self._obj_store.name_to_color[name]
-                    out[y, x] = color
-
-        # draw agent
-        out[self._state[1], self._state[0]] = agent_color
-        alpha = 0.2
-
-        # draw agent aperture
-        if self._ap_size is not None:
-            alpha = 0.2
-            ax = int(self._ap_size[0] // 2)
-            ay = int(self._ap_size[1] // 2)
-
-            xs = range(self._state[0] - ax, self._state[0] + ax + 1)
-            ys = range(self._state[1] - ay, self._state[1] + ay + 1)
-
-            for x in xs:
-                for y in ys:
-                    x = x % self._size[0]
-                    y = y % self._size[1]
-                    c = (x, y)
-                    idx = nbu.ravel(c, self._size)
-                    out[y, x] = (1 - alpha) * out[y, x] + alpha * agent_color
+            out = render_world(self._state, self._size, self._ap_size, self._obj_store.idx_to_name, self._obj_store.name_to_color, agent_color).astype(np.uint8)
 
         return out
 
