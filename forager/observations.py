@@ -39,6 +39,41 @@ def get_color_vision(
 
 
 @nbu.njit
+def render_aperture(
+    state: Coords,
+    size: Size,
+    ap_size: Size,
+    idx_to_name: Dict[int, str],
+    name_to_color: Dict[str, np.ndarray],
+    agent_color: np.ndarray
+) -> np.ndarray:
+    out = np.ones((ap_size[0], ap_size[1], 3), dtype=np.uint8) * 255
+
+    ax = int(ap_size[0] // 2)
+    ay = int(ap_size[1] // 2)
+    out[state[1] - ay, state[0] - ax] = agent_color
+
+    xs = range(state[0] - ax, state[0] + ax + 1)
+    ys = range(state[1] - ay, state[1] + ay + 1)
+
+    for i, x in enumerate(xs):
+        for j, y in enumerate(ys):
+
+            x = x % size[0]
+            y = y % size[1]
+
+            c = (x, y)
+            idx = nbu.ravel(c, size)
+            if idx in idx_to_name:
+                name = idx_to_name[idx]
+                color = name_to_color[name]
+                jr = ap_size[1] - j - 1
+                out[jr, i] = color
+
+    return out
+
+
+@nbu.njit
 def get_object_vision(
     state: Coords,
     size: Size,

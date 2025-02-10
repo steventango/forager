@@ -1,7 +1,9 @@
 import pickle
+
 import numpy as np
-from forager.Env import ForagerEnv
+
 from forager.config import ForagerConfig
+from forager.Env import ForagerEnv
 from forager.objects import Flower, Morel, Oyster, Thorns, Wall
 
 
@@ -335,7 +337,7 @@ def test_generate_objects():
     assert obs.sum() == 33
 
 
-def test_render():
+def test_render_aperture():
     config = ForagerConfig(
         size=5,
         object_types={
@@ -345,15 +347,39 @@ def test_render():
         seed=1,
     )
     env = ForagerEnv(config)
-    env.add_object(Flower((0, 0)))
+    env.add_object(Flower((1, 1)))
     env.start()
-    rgb_array = env.render()
+    rgb_array = env.render(mode="aperture")
+    assert rgb_array.shape == (3, 3, 3) and rgb_array.dtype == np.uint8
+    np.testing.assert_array_equal(
+        rgb_array,
+        [
+            [[255, 255, 255], [255, 255, 255], [255, 255, 255]],
+            [[255, 255, 255], [0, 0, 255], [255, 255, 255]],
+            [[0, 0, 0], [255, 255, 255], [255, 255, 255]],
+        ],
+    )
+
+
+def test_render_world():
+    config = ForagerConfig(
+        size=5,
+        object_types={
+            "flower": Flower,
+        },
+        aperture=3,
+        seed=1,
+    )
+    env = ForagerEnv(config)
+    env.add_object(Flower((1, 1)))
+    env.start()
+    rgb_array = env.render(mode="world")
     assert rgb_array.shape == (5, 5, 3) and rgb_array.dtype == np.uint8
     np.testing.assert_array_equal(
         rgb_array,
         [
-            [[0, 0, 0], [255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255]],
-            [[255, 255, 255], [204, 204, 255], [204, 204, 255], [204, 204, 255], [255, 255, 255]],
+            [[255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255]],
+            [[255, 255, 255], [0, 0, 51], [204, 204, 255], [204, 204, 255], [255, 255, 255]],
             [[255, 255, 255], [204, 204, 255], [0, 0, 255], [204, 204, 255], [255, 255, 255]],
             [[255, 255, 255], [204, 204, 255], [204, 204, 255], [204, 204, 255], [255, 255, 255]],
             [[255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255]],

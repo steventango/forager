@@ -12,7 +12,7 @@ from forager.exceptions import ForagerInvalidConfigException
 from forager.interface import Action, Coords, Size
 from forager.objects import ForagerObject
 from forager.ObjectStorage import ObjectStorage
-from forager.observations import get_object_vision, get_color_vision, get_world_vision
+from forager.observations import get_object_vision, get_color_vision, get_world_vision, render_aperture
 
 
 class ForagerEnv:
@@ -101,7 +101,19 @@ class ForagerEnv:
         size = (stop[0] - start[0]) * (stop[1] - start[1])
         self._obj_store.add_n_deferred_objects(name, int(size * freq), start, stop)
 
-    def render(self, agent_color: np.ndarray | None = None):
+    def render(self, agent_color: np.ndarray | None = None, mode: str = 'aperture'):
+        # draw agent
+        if agent_color is None:
+            agent_color = np.array((0, 0, 255), dtype=np.uint8)
+
+        if mode == 'aperture':
+            return render_aperture(self._state, self._size, self._ap_size, self._obj_store.idx_to_name, self._obj_store.name_to_color, agent_color).astype(np.uint8)
+        else:
+            out = self.render_world(agent_color)
+
+        return out
+
+    def render_world(self, agent_color):
         out = np.ones((self._size[1], self._size[0], 3), dtype=np.uint8) * 255
         for x in range(self._size[0]):
             for y in range(self._size[1]):
@@ -113,13 +125,12 @@ class ForagerEnv:
                     out[y, x] = color
 
         # draw agent
-        if agent_color is None:
-            agent_color = np.array((0, 0, 255), dtype=np.uint8)
         out[self._state[1], self._state[0]] = agent_color
         alpha = 0.2
 
         # draw agent aperture
         if self._ap_size is not None:
+            alpha = 0.2
             ax = int(self._ap_size[0] // 2)
             ay = int(self._ap_size[1] // 2)
 
