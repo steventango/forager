@@ -359,6 +359,17 @@ def test_render_aperture():
             [[0, 0, 0], [255, 255, 255], [255, 255, 255]],
         ],
     )
+    for _ in range(2):
+        env.step(0)
+        rgb_array = env.render(mode="aperture")
+        np.testing.assert_array_equal(
+            rgb_array,
+            [
+                [[255, 255, 255], [255, 255, 255], [255, 255, 255]],
+                [[255, 255, 255], [0, 0, 255], [255, 255, 255]],
+                [[255, 255, 255], [255, 255, 255], [255, 255, 255]],
+            ],
+        )
 
 
 def test_render_world():

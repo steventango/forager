@@ -51,7 +51,6 @@ def render_aperture(
 
     ax = int(ap_size[0] // 2)
     ay = int(ap_size[1] // 2)
-    out[state[1] - ay, state[0] - ax] = agent_color
 
     xs = range(state[0] - ax, state[0] + ax + 1)
     ys = range(state[1] - ay, state[1] + ay + 1)
@@ -69,6 +68,8 @@ def render_aperture(
                 color = name_to_color[name]
                 jr = ap_size[1] - j - 1
                 out[jr, i] = color
+
+    out[ap_size[1] // 2, ap_size[0] // 2] = agent_color
 
     return out
 
