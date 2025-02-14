@@ -9,7 +9,8 @@ from forager.exceptions import ForagerInvalidConfigException
 from forager.interface import Size
 from forager.logger import logger
 from forager.objects import ForagerObject
-
+from typing import List, Tuple
+import yaml
 ObjectFactory = Callable[[], ForagerObject]
 
 @dataclass
@@ -21,13 +22,26 @@ class ForagerConfig:
     colors: Palette | None = None
     observation_mode: str = 'objects'
     aperture: int | Size | None = 3
-
+    
+    
 def load_config(path: str) -> ForagerConfig:
     with open(path, 'r') as f:
         d = json.load(f)
 
     config = ForagerConfig(**d)
     return config
+
+def load_config_from_yaml(path: str,seed:int) -> ForagerConfig:
+    with open(path, 'r') as f:
+        d = yaml.full_load(f)
+    object_types = {obj['name'] : eval(obj['name']) for obj in d['object_types']}
+    config = ForagerConfig(size=d['size'],seed=seed,observation_mode=d['obs_view'],aperture=d['apt_size'],object_types=object_types)
+    return config
+
+def load_objects_from_yaml(path: str):
+    with open(path, 'r') as f:
+        d = yaml.full_load(f)
+    return d['object_types']
 
 def sanity_check(config: ForagerConfig) -> ForagerConfig:
     # Fatal and unfixable issues
