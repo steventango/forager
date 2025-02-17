@@ -3,6 +3,6 @@ size: !!python/tuple [16,8]
 apt_size: 17
 obs_view: objects
 object_types:
-  - {"name": "morel", "freq": 6.0,  "start": !!python/tuple [2,2], "stop": !!python/tuple [6,6]} # eval(obect_name)
+  - {"name": "morel", "freq": 6.0,  "start": !!python/tuple [2,2], "stop": !!python/tuple [6,6]}
   - {"name": "oyster", "freq": 6.0,  "start": !!python/tuple [10,2], "stop": !!python/tuple [14,16]}
 
