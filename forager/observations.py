@@ -107,7 +107,7 @@ def get_object_vision(
 
     return out
 
-@nbu.njit
+# @nbu.njit
 def get_world_vision(
     state: Coords,
     size: Size,

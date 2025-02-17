@@ -11,6 +11,8 @@ from forager.logger import logger
 from forager.objects import ForagerObject
 from typing import List, Tuple
 import yaml
+from forager.objects import *
+
 ObjectFactory = Callable[[], ForagerObject]
 
 @dataclass
@@ -34,7 +36,7 @@ def load_config(path: str) -> ForagerConfig:
 def load_config_from_yaml(path: str,seed:int) -> ForagerConfig:
     with open(path, 'r') as f:
         d = yaml.full_load(f)
-    object_types = {obj['name'] : eval(obj['name']) for obj in d['object_types']}
+    object_types = {obj['name'] : eval(obj['name'].capitalize()) for obj in d['object_types']}
     config = ForagerConfig(size=d['size'],seed=seed,observation_mode=d['obs_view'],aperture=d['apt_size'],object_types=object_types)
     return config
 

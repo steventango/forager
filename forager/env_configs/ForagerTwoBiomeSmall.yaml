@@ -1,6 +1,6 @@
 env_name: TwoBiomeSmall
 size: !!python/tuple [16,8]
-apt_size: 3 # 17
+apt_size: 17
 obs_view: objects
 object_types:
   - {"name": "morel", "freq": 6.0,  "start": !!python/tuple [2,2], "stop": !!python/tuple [6,6]} # eval(obect_name)
