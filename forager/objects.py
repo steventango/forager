@@ -98,7 +98,7 @@ class Oyster(ForagerObject):
 
 class DeathCap(ForagerObject):
     def __init__(self, loc: Coords | None = None):
-        super().__init__(name="oyster")
+        super().__init__(name="deathcap")
 
         self.blocking = False
         self.collectable = True
