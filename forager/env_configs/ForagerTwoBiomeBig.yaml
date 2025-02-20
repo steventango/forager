@@ -1,6 +1,6 @@
 env_name: TwoBiomeBig
-size: !!python/tuple [32,32] #[16,8]
-apt_size: 32
+size: !!python/tuple [31,31] #[16,8]
+apt_size: 31
 obs_view: objects
 object_types:
   - {"name": "morel", "freq": 6.0,  "start": !!python/tuple [2,2], "stop": !!python/tuple [10,10]}
