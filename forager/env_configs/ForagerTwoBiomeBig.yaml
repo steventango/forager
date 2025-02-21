@@ -1,8 +1,10 @@
 env_name: TwoBiomeBig
-size: !!python/tuple [31,31] #[16,8]
-apt_size: 31
+size: !!python/tuple [15,15] #[16,8]
+apt_size: 15
 obs_view: objects
 object_types:
-  - {"name": "morel", "freq": 6.0,  "start": !!python/tuple [2,2], "stop": !!python/tuple [10,10]}
-  - {"name": "oyster", "freq": 6.0,  "start": !!python/tuple [22,22], "stop": !!python/tuple [30,30]}
+  - {"name": "morel", "freq": 0.5,  "start": !!python/tuple [3,0], "stop": !!python/tuple [5,15]}
+  - {"name": "oyster", "freq": 0.5,  "start": !!python/tuple [10,0], "stop": !!python/tuple [12,15]}
+  - {"name": "deathcap", "freq": 0.25,  "start": !!python/tuple [10,0], "stop": !!python/tuple [12,15]}
+
 
