@@ -111,3 +111,24 @@ class DeathCap(ForagerObject):
 
     def reward(self, rng: np.random.Generator, clock: int) -> float:
         return -1
+
+
+class LargeMorel(Morel):
+    def regen_delay(self, rng: np.random.Generator, clock: int) -> int | None:
+        self.target_location = self.current_location
+        return int(max(0, rng.normal(300, 30)))
+
+    def reward(self, rng: np.random.Generator, clock: int) -> float:
+        return 30
+
+
+class LargeOyster(Oyster):
+    def regen_delay(self, rng: np.random.Generator, clock: int) -> int | None:
+        self.target_location = self.current_location
+        return int(max(0, rng.normal(10, 1)))
+
+
+class LargeDeathCap(DeathCap):
+    def regen_delay(self, rng: np.random.Generator, clock: int) -> int | None:
+        self.target_location = self.current_location
+        return int(max(0, rng.normal(10, 1)))
