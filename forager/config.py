@@ -34,7 +34,7 @@ def load_config(path: str) -> ForagerConfig:
     return config
 
 def load_config_from_yaml(path: str,seed:int,apt_size=None) -> ForagerConfig:
-    name_converter = {'morel':'Morel','oyster':'Oyster','deathcap':'DeathCap'}
+    name_converter = {'morel':'LargeMorel','oyster':'LargeOyster','deathcap':'LargeDeathCap'}
     with open(path, 'r') as f:
         d = yaml.full_load(f)
     object_types = {obj['name'] : eval(name_converter[obj['name']]) for obj in d['object_types']}
