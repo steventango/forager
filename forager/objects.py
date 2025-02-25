@@ -69,7 +69,7 @@ class Morel(ForagerObject):
         self.blocking = False
         self.collectable = True
         self.target_location = loc
-        self.color = np.array((115, 52, 42), dtype=np.uint8)
+        self.color = np.array((43, 1, 0), dtype=np.uint8)
 
     def regen_delay(self, rng: np.random.Generator, clock: int) -> int | None:
         self.target_location = self.current_location
@@ -86,7 +86,7 @@ class Oyster(ForagerObject):
         self.blocking = False
         self.collectable = True
         self.target_location = loc
-        self.color = np.array((255, 177, 199), dtype=np.uint8)
+        self.color = np.array((126, 62, 83), dtype=np.uint8)
 
     def regen_delay(self, rng: np.random.Generator, clock: int) -> int | None:
         self.target_location = self.current_location
@@ -103,7 +103,7 @@ class DeathCap(ForagerObject):
         self.blocking = False
         self.collectable = True
         self.target_location = loc
-        self.color = np.array((220, 220, 70), dtype=np.uint8)
+        self.color = np.array((176, 175, 94), dtype=np.uint8)
 
     def regen_delay(self, rng: np.random.Generator, clock: int) -> int | None:
         self.target_location = self.current_location
