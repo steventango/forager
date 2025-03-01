@@ -1,5 +1,6 @@
 import numpy as np
 import numba as nb
+from PIL import Image
 import forager._utils.numba as nbu
 import forager._utils.config as cu
 import forager.grid as grid
@@ -107,11 +108,22 @@ class ForagerEnv:
             agent_color = np.array((0, 0, 255), dtype=np.uint8)
 
         if mode == 'aperture':
-            return render_aperture(self._state, self._size, self._ap_size, self._obj_store.idx_to_name, self._obj_store.name_to_color, agent_color).astype(np.uint8)
+            out = render_aperture(self._state, self._size, self._ap_size, self._obj_store.idx_to_name, self._obj_store.name_to_color, agent_color).astype(np.uint8)
         else:
             out = render_world(self._state, self._size, self._ap_size, self._obj_store.idx_to_name, self._obj_store.name_to_color, agent_color).astype(np.uint8)
 
-        return out
+        image = Image.fromarray(out)
+        scale = 32
+        image = image.resize((out.shape[1] * scale, out.shape[0] * scale), Image.Resampling.NEAREST)
+
+        # draw grid lines
+        image = np.array(image)
+        for i in range(0, image.shape[0], scale):
+            image[i, :, :] = 0
+        for j in range(0, image.shape[1], scale):
+            image[:, j, :] = 0
+
+        return image
 
     def remove_object(self, coords: Coords):
         idx = nbu.ravel(coords, self._size)
